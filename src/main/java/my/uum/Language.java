@@ -279,6 +279,50 @@ class UserInformation {
     // Define an ArrayList to hold user information for each user
     private static final List<UserInformation> userInformations = new ArrayList<>();
 
+    // File for persistent storage
+    private static final String USER_DATA_FILE = "user_data.txt";
+    // Static block to load user data on class load
+    static {
+        loadUserData();
+        System.out.println("Total User: " + userInformations.size());
+    }
+    // Save all user info to file (chatId, language, state, zone)
+    private static void saveUserData() {
+        try (java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.FileWriter(USER_DATA_FILE))) {
+            for (UserInformation user : userInformations) {
+                // Escape commas in fields if needed
+                String chatId = user.chatId == null ? "" : user.chatId.replace(",", " ");
+                String language = user.language == null ? "" : user.language.replace(",", " ");
+                String state = user.state == null ? "" : user.state.replace(",", " ");
+                String zone = user.zone == null ? "" : user.zone.replace(",", " ");
+                writer.println(chatId + "," + language + "," + state + "," + zone);
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to save user data: " + e.getMessage());
+        }
+    }
+
+    // Load all user info from file
+    private static void loadUserData() {
+        java.io.File file = new java.io.File(USER_DATA_FILE);
+        if (!file.exists()) return;
+        try (java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(file))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",", -1);
+                if (parts.length >= 4) {
+                    UserInformation user = new UserInformation(parts[0]);
+                    user.setLanguage(parts[1]);
+                    user.setState(parts[2]);
+                    user.setZone(parts[3]);
+                    userInformations.add(user);
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load user data: " + e.getMessage());
+        }
+    }
+
     /**
      * Default constructor for UserInformation class.
      * Initializes the currentState field with "STATE_NORMAL".
@@ -415,7 +459,7 @@ class UserInformation {
         // If the user is not found, create a new user with the given chatId and default values
         UserInformation newUser = new UserInformation(chatId);
         userInformations.add(newUser);
-        System.out.println("Total User: " + totalUser++);
+        System.out.println("Total User: " + userInformations.size());
         return newUser.getCurrentState(); // Return default current state
     }
 
@@ -568,6 +612,7 @@ class UserInformation {
         for (UserInformation user : userInformations) {
             if (user.getChatId().equals(chatId)) {
                 user.setLanguage(language);
+                saveUserData();
                 return;
             }
         }
@@ -584,6 +629,7 @@ class UserInformation {
         for (UserInformation user : userInformations) {
             if (user.getChatId().equals(chatId)) {
                 user.setState(state);
+                saveUserData();
                 return;
             }
         }
@@ -600,6 +646,7 @@ class UserInformation {
         for (UserInformation user : userInformations) {
             if (user.getChatId().equals(chatId)) {
                 user.setZone(zone);
+                saveUserData();
                 return;
             }
         }
