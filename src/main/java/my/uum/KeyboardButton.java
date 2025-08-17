@@ -20,27 +20,29 @@ import java.util.List;
 public class KeyboardButton {
 
     private final TelegramBot bot;
+    private final String botUsername;
 
     /**
      * Constructs a KeyboardButton instance with a reference to the TelegramBot instance.
      * @param bot The TelegramBot instance
      */
-    public KeyboardButton(TelegramBot bot) {
+    public KeyboardButton(TelegramBot bot, String botUsername) {
         this.bot = bot;
+        this.botUsername = botUsername;
     }
 
     /**
      * Sends a startup message with language selection buttons.
      * @param chatId The chat ID to send the message to
-     * @param username The username of the user
+     * @param firstName The firstName of the user
      * @return The message ID of the sent message
      */
-    public Integer sendStartupMessage(String chatId, String username) {
+    public Integer sendStartupMessage(String chatId, String firstName) {
         //Create welcome message
         String welcomeMessage =
-                ("English:\nAssalamualaikum " + username + ", I am the *Solat Time Bot \\(MY\\)*\\.\n\n" +
+                ("English:\nAssalamualaikum " + firstName + ", I am the *Prayer Times Bot \\(MY\\)*\\.\n\n" +
                         "To begin, please choose your preferred language\\.\n\n\n" +
-                        "Bahasa Melayu:\nAssalamualaikum " + username + ", saya adalah *Bot Waktu Solat \\(MY\\)*\\.\n\n" +
+                        "Bahasa Melayu:\nAssalamualaikum " + firstName + ", saya adalah *Bot Waktu Solat \\(MY\\)*\\.\n\n" +
                         "Untuk bermula, sila pilih bahasa yang anda mahu gunakan\\.");
 
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
@@ -125,7 +127,7 @@ public class KeyboardButton {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(chatId);
         editMessageText.setMessageId(messageId);
-        editMessageText.setText(Language.informLanguage(chatId));
+        editMessageText.setText(Language.informLanguage(chatId, botUsername));
         editMessageText.setReplyMarkup(markup);
         editMessageText.setParseMode("MarkdownV2");
 
@@ -189,47 +191,46 @@ public class KeyboardButton {
      */
     public void sendZoneMenu(String chatId, Integer messageId, String stateMessage) {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
-        State state = new State();
 
         if (!(stateMessage.equals("Pulau Pinang") || stateMessage.equals("Melaka"))) {
             String[][] buttons;
 
             switch (stateMessage) {
                 case "Johor":
-                    buttons = state.Johor();
+                    buttons = State.Johor();
                     break;
                 case "Kedah":
-                    buttons = state.Kedah();
+                    buttons = State.Kedah();
                     break;
                 case "Kelantan":
-                    buttons = state.Kelantan();
+                    buttons = State.Kelantan();
                     break;
                 case "Negeri Sembilan":
-                    buttons = state.NegeriSembilan();
+                    buttons = State.NegeriSembilan();
                     break;
                 case "Pahang":
-                    buttons = state.Pahang();
+                    buttons = State.Pahang();
                     break;
                 case "Perlis":
-                    buttons = state.Perlis();
+                    buttons = State.Perlis();
                     break;
                 case "Perak":
-                    buttons = state.Perak();
+                    buttons = State.Perak();
                     break;
                 case "Sabah":
-                    buttons = state.Sabah();
+                    buttons = State.Sabah();
                     break;
                 case "Selangor":
-                    buttons = state.Selangor();
+                    buttons = State.Selangor();
                     break;
                 case "Sarawak":
-                    buttons = state.Sarawak();
+                    buttons = State.Sarawak();
                     break;
                 case "Terengganu":
-                    buttons = state.Terengganu();
+                    buttons = State.Terengganu();
                     break;
                 default:
-                    buttons = state.WilayahPersekutuan();
+                    buttons = State.WilayahPersekutuan();
                     break;
             }
 
@@ -354,7 +355,7 @@ public class KeyboardButton {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(chatId);
         editMessageText.setMessageId(messageId);
-        editMessageText.setText(Language.informLanguage(chatId));
+        editMessageText.setText(Language.informLanguage(chatId, botUsername));
         editMessageText.setParseMode("MarkdownV2");
 
         try {
@@ -371,7 +372,7 @@ public class KeyboardButton {
     public void sendSource(String chatId) {// Create the message
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
-        message.setText(Language.source(chatId));
+        message.setText(Language.source(chatId, botUsername));
         message.setParseMode("MarkdownV2");
 
         try {
@@ -425,13 +426,15 @@ public class KeyboardButton {
  */
 class ResendKeyboardButton {
     private final TelegramBot bot;
+    private final String botUsername;
 
     /**
      * Constructs a ResendKeyboardButton instance with a reference to the TelegramBot instance.
      * @param bot The TelegramBot instance
      */
-    public ResendKeyboardButton(TelegramBot bot) {
+    public ResendKeyboardButton(TelegramBot bot, String botUsername) {
         this.bot = bot;
+        this.botUsername = botUsername;
     }
 
     /**
@@ -457,7 +460,7 @@ class ResendKeyboardButton {
 
         // Create the message
         message.setChatId(chatId);
-        message.setText(Language.informLanguage(chatId));
+        message.setText(Language.informLanguage(chatId, botUsername));
         message.setReplyMarkup(markup);
         message.setParseMode("MarkdownV2");
 
@@ -489,40 +492,40 @@ class ResendKeyboardButton {
 
             switch (stateMessage) {
                 case "Johor":
-                    buttons = state.Johor();
+                    buttons = State.Johor();
                     break;
                 case "Kedah":
-                    buttons = state.Kedah();
+                    buttons = State.Kedah();
                     break;
                 case "Kelantan":
-                    buttons = state.Kelantan();
+                    buttons = State.Kelantan();
                     break;
                 case "Negeri Sembilan":
-                    buttons = state.NegeriSembilan();
+                    buttons = State.NegeriSembilan();
                     break;
                 case "Pahang":
-                    buttons = state.Pahang();
+                    buttons = State.Pahang();
                     break;
                 case "Perlis":
-                    buttons = state.Perlis();
+                    buttons = State.Perlis();
                     break;
                 case "Perak":
-                    buttons = state.Perak();
+                    buttons = State.Perak();
                     break;
                 case "Sabah":
-                    buttons = state.Sabah();
+                    buttons = State.Sabah();
                     break;
                 case "Selangor":
-                    buttons = state.Selangor();
+                    buttons = State.Selangor();
                     break;
                 case "Sarawak":
-                    buttons = state.Sarawak();
+                    buttons = State.Sarawak();
                     break;
                 case "Terengganu":
-                    buttons = state.Terengganu();
+                    buttons = State.Terengganu();
                     break;
                 default:
-                    buttons = state.WilayahPersekutuan();
+                    buttons = State.WilayahPersekutuan();
                     break;
             }
 

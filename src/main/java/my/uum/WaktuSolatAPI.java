@@ -19,7 +19,6 @@ import java.util.Locale;
  * @author Aiman Norazli
  */
 public class WaktuSolatAPI {
-    private final Location location = new Location();
 
     /**
      * Retrieves the prayer times for a specified chat ID.
@@ -27,7 +26,7 @@ public class WaktuSolatAPI {
      * @param chatId The ID of the chat to retrieve prayer times for.
      * @return A formatted string containing the prayer times for the specified chat ID, or null if an error occurs.
      */
-    public String getPrayerTimes(String chatId) {
+    public static String getPrayerTimes(String chatId) {
 
         String area;
         try {
@@ -106,6 +105,7 @@ public class WaktuSolatAPI {
                 String fajr = LocalTime.parse(prayerTimeObject.get("fajr").getAsString()).format(timeFormatter).toLowerCase();
                 String syuruk = LocalTime.parse(prayerTimeObject.get("syuruk").getAsString()).format(timeFormatter).toLowerCase();
                 String dhuhr = LocalTime.parse(prayerTimeObject.get("dhuhr").getAsString()).format(timeFormatter).toLowerCase();
+                String dhuha = LocalTime.parse(prayerTimeObject.get("dhuha").getAsString()).format(timeFormatter).toLowerCase();
                 String asr = LocalTime.parse(prayerTimeObject.get("asr").getAsString()).format(timeFormatter).toLowerCase();
                 String maghrib = LocalTime.parse(prayerTimeObject.get("maghrib").getAsString()).format(timeFormatter).toLowerCase();
                 String isha = LocalTime.parse(prayerTimeObject.get("isha").getAsString()).format(timeFormatter).toLowerCase();
@@ -120,6 +120,7 @@ public class WaktuSolatAPI {
                 prayerTimes.append("*Imsak*: ").append(imsak).append("\n")
                         .append("*Subuh*: ").append(fajr).append("\n")
                         .append("*Syuruk*: ").append(syuruk).append("\n")
+                        .append("*Dhuha*: ").append(dhuha).append("\n")
                         .append("*Zohor*: ").append(dhuhr).append("\n")
                         .append("*Asar*: ").append(asr).append("\n")
                         .append("*Maghrib*: ").append(maghrib).append("\n")

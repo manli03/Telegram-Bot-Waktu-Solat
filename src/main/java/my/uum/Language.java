@@ -9,8 +9,6 @@ import java.util.List;
  * @author Aiman Norazli
  */
 public class Language {
-    static UserInformation ui = new UserInformation();
-
 
     /**
      * Generates the message prompting the user to choose a language.
@@ -18,7 +16,7 @@ public class Language {
      * @return The message prompting the user to choose a language
      */
     public static String chooseLanguage(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "Sila pilih bahasa yang anda mahu gunakan.";
         }else {
             return "Please choose your preferred language."; // Default to English
@@ -31,7 +29,7 @@ public class Language {
      * @return The menu message
      */
     public static String menuMessage(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "*Selamat datang ke Menu Bot\\!*\n\n" +
                     "\\- /waktu\\_solat \\- Dapatkan waktu solat bagi kawasan anda\\.\n" +
                     "\\- /tukar\\_negeri \\- Tukar negeri anda\\.\n" +
@@ -39,7 +37,7 @@ public class Language {
                     "\\- /tukar\\_bahasa \\- Tukar bahasa yang digunakan\\.\n" +
                     "\\- /sumber \\- Papar sumber data bagi waktu solat yang digunakan bot ini\\.\n" +
                     "\\- /papar\\_menu \\- Papar Menu ini\n\n" +
-                    "Untuk menggunakan arahan, taip nama arahan dengan tanda `/` di hadapannya \\(contohnya, `/help`\\)\\.";
+                    "Untuk menggunakan arahan, taip nama arahan dengan tanda `/` di hadapannya \\(contohnya, `/sumber`\\)\\.";
         } else {
             return "*Welcome to the Bot Menu\\!*\n\n" +
                     "\\- /prayer\\_time \\- Get prayer time at your place\\.\n" +
@@ -48,20 +46,28 @@ public class Language {
                     "\\- /change\\_language \\- Change language use\\.\n" +
                     "\\- /source \\- Display data source for prayer time that use by this bot\\.\n" +
                     "\\- /show\\_menu \\- Display this Menu\\.\n\n" +
-                    "To use a command, type the command name prefixed with `/` \\(e\\.g, `/help`\\)\\.";
+                    "To use a command, type the command name prefixed with `/` \\(e\\.g, `/source`\\)\\.";
         }
     }
 
     /**
-     * Generates the message informing the user about the selected language.
-     * @param chatId The chat ID of the user
-     * @return The message informing the user about the selected language
+     * Generates a message informing the user about their selected language.
+     * The message will include the bot's username and will be formatted for Telegram MarkdownV2.
+     *
+     * @param chatId       The chat ID of the user whose language preference is being checked.
+     * @param botUsername  The username of the bot (without '@'), will be included in the message.
+     * @return A formatted message informing the user of the selected language.
      */
-    public static String informLanguage(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
-            return "Anda telah memilih *Bahasa Melayu*\\.\n\n@s294214\\_bot kini akan berkomunikasi dengan anda dalam bahasa melayu\\.";
-        }else {
-            return "You have choose *English* language\\.\n\nThe @s294214\\_bot will now interact with you in english\\."; // Default to English
+    public static String informLanguage(String chatId, String botUsername) {
+        String safeBotUsername = botUsername.replace("_", "\\_"); // Escape underscores for MarkdownV2
+        String language = UserInformation.getUserLanguagePreference(chatId);
+
+        if ("Bahasa Melayu".equals(language)) {
+            return "Anda telah memilih *Bahasa Melayu*\\.\n\n@" + safeBotUsername +
+                    " kini akan berkomunikasi dengan anda dalam bahasa melayu\\.";
+        } else {
+            return "You have choose *English* language\\.\n\nThe @" + safeBotUsername +
+                    " will now interact with you in english\\."; // Default to English
         }
     }
 
@@ -71,7 +77,7 @@ public class Language {
      * @return The message prompting the user to choose a state
      */
     public static String state(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "Sila pilih negeri yang anda berada sekarang.";
         }else {
             return "Choose the state that you are in."; // Default to English
@@ -84,7 +90,7 @@ public class Language {
      * @return The message prompting the user to choose a zone
      */
     public static String zone(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "Sekarang, sila pilih kawasan yang berdekatan dengan anda.";
         }else {
             return "Now, choose the nearest area to you."; // Default to English
@@ -97,7 +103,7 @@ public class Language {
      * @return The text for the "Next" button
      */
     public static String nextButton(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "Seterusnya";
         }else {
             return "Next"; // Default to English
@@ -110,7 +116,7 @@ public class Language {
      * @return The text for the zone of Pulau Pinang
      */
     public static String zonPenang(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "Seluruh Kawasan Pulau Pinang";
         }else {
             return "The Whole Area of Pulau Pinang"; // Default to English
@@ -123,7 +129,7 @@ public class Language {
      * @return The text for the zone of Melaka
      */
     public static String zonMelaka(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "Seluruh Kawasan Melaka";
         }else {
             return "The Whole Area of Melaka"; // Default to English
@@ -132,14 +138,22 @@ public class Language {
 
     /**
      * Generates the source information message based on the user's language preference.
-     * @param chatId The chat ID of the user
-     * @return The source information message
+     * The message will include the bot's username and be formatted for Telegram MarkdownV2.
+     *
+     * @param chatId      The chat ID of the user whose language preference is being checked.
+     * @param botUsername The username of the bot (without '@'), will be included in the message.
+     * @return A formatted source information message in the user's preferred language.
      */
-    public static String source(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
-            return "Data bagi @s294214\\_bot ini diperoleh dari laman sesawang [e\\-solat](https://www.e-solat.gov.my/)\\.";
-        }else {
-            return "The data source for @s294214\\_bot is obtained from the [e\\-solat](https://www.e\\-solat.gov.my/) website\\."; // Default to English
+    public static String source(String chatId, String botUsername) {
+        String safeBotUsername = botUsername.replace("_", "\\_"); // Escape underscores for MarkdownV2
+        String language = UserInformation.getUserLanguagePreference(chatId);
+
+        if ("Bahasa Melayu".equals(language)) {
+            return "Data bagi @" + safeBotUsername +
+                    " ini diperoleh dari laman sesawang [e\\-solat](https://www.e-solat.gov.my/)\\.";
+        } else {
+            return "The data source for @" + safeBotUsername +
+                    " is obtained from the [e\\-solat](https://www.e-solat.gov.my/) website\\."; // Default to English
         }
     }
 
@@ -149,7 +163,7 @@ public class Language {
      * @return The header for the output
      */
     public static String outputHeader(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "\uD83C\uDF1F *WAKTU SOLAT HARI INI* \uD83C\uDF1F\n\n";
         }else {
             return "\uD83C\uDF1F *TODAY'S PRAYER TIMES* \uD83C\uDF1F\n\n"; // Default to English
@@ -162,7 +176,7 @@ public class Language {
      * @return The text for the day output
      */
     public static String outputDay(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "*Hari*: ";
         }else {
             return "*Day*: "; // Default to English
@@ -175,7 +189,7 @@ public class Language {
      * @return The text for the state output
      */
     public static String outputState(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "*Negeri*: ";
         }else {
             return "*State*: "; // Default to English
@@ -188,7 +202,7 @@ public class Language {
      * @return The text for the area output
      */
     public static String outputArea(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "*Kawasan*: ";
         }else {
             return "*Area*: "; // Default to English
@@ -201,7 +215,7 @@ public class Language {
      * @return The failed prayer message
      */
     public static String failedPrayerMessage(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "Gagal untuk mendapatkan waktu solat\\.\nSila cuba sebentar lagi\\.";
         }else {
             return "Failed to fetch prayer times\\.\nPlease try again later\\."; // Default to English
@@ -214,7 +228,7 @@ public class Language {
      * @return The failed zone area message
      */
     public static String failedZoneArea(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "Gagal untuk mendapatkan kawasan.\nSila cuba sebentar lagi.";
         }else {
             return "Failed to fetch zone area.\nPlease try again later."; // Default to English
@@ -227,7 +241,7 @@ public class Language {
      * @return The error message
      */
     public static String errorMessage(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "Maaf, pilihan anda tidak sah.\nSila cuba lagi.";
         }else {
             return "I'm sorry, that is not a valid option.\nPlease try again."; // Default to English
@@ -240,7 +254,7 @@ public class Language {
      * @return The message for showing the menu
      */
     public static String showMenuMessage(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "Tekan /papar_menu untuk teruskan.";
         }else {
             return "Tap /show_menu to continue."; // Default to English
@@ -253,7 +267,7 @@ public class Language {
      * @return The message prompting the user to choose a state first
      */
     public static String chooseStateFirst(String chatId) {
-        if (ui.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
+        if (UserInformation.getUserLanguagePreference(chatId).equals("Bahasa Melayu")) {
             return "Sila pilih negeri anda dahulu.";
         }else {
             return "Please choose your state first."; // Default to English
@@ -263,18 +277,18 @@ public class Language {
 
 /**
  * The UserInformation class represents information about each user in a chat system.
- * It stores details such as chat ID, language preference, state, zone, and last message information.
+ * It stores details such as chat ID, username, language preference, state, zone, and last message information.
  * @author Aiman Norazli
  */
 class UserInformation {
     private String chatId; // To hold the chatId of each user
+    private String username; // To hold the username of each user
     private String language; // To hold the language of each user
     private String state; // To hold the state of each user
     private String currentState; // To hold the current state of each user
     private String zone; // To hold the zone of each user
     private String lastSendMessage; // To hold the last message sent time of each user
     private Integer lastButtonMessageId; // To hold the last sent button chatId of each user
-    private static int totalUser = 1;
 
     // Define an ArrayList to hold user information for each user
     private static final List<UserInformation> userInformations = new ArrayList<>();
@@ -286,16 +300,17 @@ class UserInformation {
         loadUserData();
         System.out.println("Total User: " + userInformations.size());
     }
-    // Save all user info to file (chatId, language, state, zone)
+    // Save all user info to file (chatId, username, language, state, zone)
     private static void saveUserData() {
         try (java.io.PrintWriter writer = new java.io.PrintWriter(new java.io.FileWriter(USER_DATA_FILE))) {
             for (UserInformation user : userInformations) {
                 // Escape commas in fields if needed
                 String chatId = user.chatId == null ? "" : user.chatId.replace(",", " ");
+                String username = user.username == null ? "" : user.username.replace(",", " ");
                 String language = user.language == null ? "" : user.language.replace(",", " ");
                 String state = user.state == null ? "" : user.state.replace(",", " ");
                 String zone = user.zone == null ? "" : user.zone.replace(",", " ");
-                writer.println(chatId + "," + language + "," + state + "," + zone);
+                writer.println(chatId + "," + username + "," + language + "," + state + "," + zone);
             }
         } catch (Exception e) {
             System.err.println("Failed to save user data: " + e.getMessage());
@@ -310,11 +325,12 @@ class UserInformation {
             String line;
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",", -1);
-                if (parts.length >= 4) {
+                if (parts.length >= 5) {
                     UserInformation user = new UserInformation(parts[0]);
-                    user.setLanguage(parts[1]);
-                    user.setState(parts[2]);
-                    user.setZone(parts[3]);
+                    user.setUsername(parts[1]);
+                    user.setLanguage(parts[2]);
+                    user.setState(parts[3]);
+                    user.setZone(parts[4]);
                     userInformations.add(user);
                 }
             }
@@ -338,6 +354,7 @@ class UserInformation {
      */
     private UserInformation(String chatId) {
         this.chatId = chatId; // Use the passed chatId value
+        this.username = null; // No default username
         this.language = "English"; // Default language
         this.state = null; // No default state
         this.currentState = "STATE_NORMAL"; // Default current state
@@ -528,6 +545,15 @@ class UserInformation {
     // Setter methods
 
     /**
+     * Setter for username.
+     *
+     * @param username The latest username of the user.
+     */
+    private void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
      * Setter for language.
      *
      * @param language The language preference to set for the user.
@@ -565,7 +591,7 @@ class UserInformation {
      *
      * @param zone The zone to set for the user.
      */
-    public void setZone(String zone) {
+    private void setZone(String zone) {
         this.zone = zone;
     }
 
@@ -597,6 +623,22 @@ class UserInformation {
         for (UserInformation lang : userInformations) {
             if (lang.getChatId().equals(chatId)) {
                 lang.setCurrentState(currentState);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Method to set the current username of the user based on chatId.
+     *
+     * @param chatId The chatId of the user.
+     * @param username The current username to set for the user.
+     */
+    public static void setUserUsername(String chatId, String username) {
+        for (UserInformation user : userInformations) {
+            if (user.getChatId().equals(chatId)) {
+                user.setUsername(username);
+                saveUserData();
                 return;
             }
         }
