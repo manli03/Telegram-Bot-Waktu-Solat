@@ -1,5 +1,6 @@
-# Use an official OpenJDK runtime as a base image
-FROM openjdk:8-jre-slim
+# Use a maintained multi-arch OpenJDK runtime (Temurin) as a base image
+# Temurin images are multi-arch and commonly available for both amd64 and arm64
+FROM eclipse-temurin:8-jre
 
 # Set the working directory in the Docker container
 WORKDIR /app

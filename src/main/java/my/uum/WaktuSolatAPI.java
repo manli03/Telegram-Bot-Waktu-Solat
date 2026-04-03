@@ -1,7 +1,6 @@
 package my.uum;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -47,11 +46,11 @@ public class WaktuSolatAPI {
 
         // Set Malaysia's timezone
         ZoneId malaysiaZone = ZoneId.of("Asia/Kuala_Lumpur");
-        LocalDate todayMalaysia = ZonedDateTime.now(malaysiaZone).toLocalDate();
 
         // Define OkHttpClient and request URL
         OkHttpClient client = new OkHttpClient();
-        String url = "https://www.e-solat.gov.my/index.php?r=esolatApi/takwimsolat&period=today&zone=" + zoneCode;
+        int dayOfMonth = ZonedDateTime.now(malaysiaZone).getDayOfMonth();
+        String url = "https://api.waktusolat.app/solat/" + zoneCode + "/" + dayOfMonth;
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -68,20 +67,9 @@ public class WaktuSolatAPI {
             Gson gson = new Gson();
             JsonObject jsonObject = gson.fromJson(jsonData, JsonObject.class);
 
-            // Extract serverTime object
-//            String serverTime = jsonObject.get("serverTime").getAsString();
-//            String dateValue = serverTime.split(" ")[0];
-
-            // Validate date consistency
-//            if (!todayMalaysia.toString().equals(dateValue)) {
-//                System.err.println("API returned a different date: " + dateValue);
-//            }
-
-            // Extract prayerTime array
-            JsonArray prayerTimeArray = jsonObject.getAsJsonArray("prayerTime");
-            if (prayerTimeArray != null && !prayerTimeArray.isEmpty()) {
-                // Access the first element in the prayerTime array (assuming only one element)
-                JsonObject prayerTimeObject = prayerTimeArray.get(0).getAsJsonObject();
+            // Extract prayerTime object
+            JsonObject prayerTimeObject = jsonObject.getAsJsonObject("prayerTime");
+            if (prayerTimeObject != null) {
 
                 // Create a StringBuilder to build the formatted output
                 StringBuilder prayerTimes = new StringBuilder();
@@ -94,18 +82,20 @@ public class WaktuSolatAPI {
 
                 // Access the current date
                 LocalDate currentDate = LocalDate.now();
-//                LocalDate currentDate = LocalDate.parse(dateValue); // Use date from api server
                 String localLanguage = UserInformation.getUserLanguagePreferenceCode(chatId);
                 Locale malaysiaLocale = new Locale(localLanguage, "MY"); //Change language
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy", malaysiaLocale);
                 String dateAccessedFormatted = currentDate.format(dateFormatter);
 
                 // Extract and format each prayer time
-                String imsak = LocalTime.parse(prayerTimeObject.get("imsak").getAsString()).format(timeFormatter).toLowerCase();
-                String fajr = LocalTime.parse(prayerTimeObject.get("fajr").getAsString()).format(timeFormatter).toLowerCase();
-                String syuruk = LocalTime.parse(prayerTimeObject.get("syuruk").getAsString()).format(timeFormatter).toLowerCase();
+                LocalTime fajrTime = LocalTime.parse(prayerTimeObject.get("fajr").getAsString());
+                LocalTime syurukTime = LocalTime.parse(prayerTimeObject.get("syuruk").getAsString());
+                // imsak is 10 minutes before fajr; dhuha is 25 minutes after syuruk
+                String imsak = fajrTime.minusMinutes(10).format(timeFormatter).toLowerCase();
+                String fajr = fajrTime.format(timeFormatter).toLowerCase();
+                String syuruk = syurukTime.format(timeFormatter).toLowerCase();
                 String dhuhr = LocalTime.parse(prayerTimeObject.get("dhuhr").getAsString()).format(timeFormatter).toLowerCase();
-                String dhuha = LocalTime.parse(prayerTimeObject.get("dhuha").getAsString()).format(timeFormatter).toLowerCase();
+                String dhuha = syurukTime.plusMinutes(25).format(timeFormatter).toLowerCase();
                 String asr = LocalTime.parse(prayerTimeObject.get("asr").getAsString()).format(timeFormatter).toLowerCase();
                 String maghrib = LocalTime.parse(prayerTimeObject.get("maghrib").getAsString()).format(timeFormatter).toLowerCase();
                 String isha = LocalTime.parse(prayerTimeObject.get("isha").getAsString()).format(timeFormatter).toLowerCase();
