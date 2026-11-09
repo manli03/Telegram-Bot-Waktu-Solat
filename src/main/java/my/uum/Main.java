@@ -22,8 +22,11 @@ public class Main {
             botsApi.registerBot(new TelegramBot());
             System.out.println("Bot is running...");
         } catch (TelegramApiException e) {
-            // Handle any errors that occur during bot initialization
-            System.err.println("An error occurred while initializing the bot: " + e.getMessage());
+            System.err.println("Telegram API Exception:");
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Unexpected Exception:");
+            e.printStackTrace();
         }
     }
 }

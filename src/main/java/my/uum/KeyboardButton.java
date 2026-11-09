@@ -20,15 +20,13 @@ import java.util.List;
 public class KeyboardButton {
 
     private final TelegramBot bot;
-    private final String botUsername;
 
     /**
      * Constructs a KeyboardButton instance with a reference to the TelegramBot instance.
      * @param bot The TelegramBot instance
      */
-    public KeyboardButton(TelegramBot bot, String botUsername) {
+    public KeyboardButton(TelegramBot bot) {
         this.bot = bot;
-        this.botUsername = botUsername;
     }
 
     /**
@@ -92,7 +90,7 @@ public class KeyboardButton {
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setParseMode("MarkdownV2");
-        message.setText(Language.menuMessage(chatId));
+        message.setText(Language.get(chatId, "menuMessage"));
 
         try {
             bot.execute(message);
@@ -113,7 +111,7 @@ public class KeyboardButton {
 
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         InlineKeyboardButton button = new InlineKeyboardButton();
-        button.setText(Language.nextButton(chatId));
+        button.setText(Language.get(chatId, "nextButton"));
         button.setCallbackData("next");
         row1.add(button);
 
@@ -127,7 +125,7 @@ public class KeyboardButton {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(chatId);
         editMessageText.setMessageId(messageId);
-        editMessageText.setText(Language.informLanguage(chatId, botUsername));
+        editMessageText.setText(Language.get(chatId, "informLanguage", bot.getBotUsername()));
         editMessageText.setReplyMarkup(markup);
         editMessageText.setParseMode("MarkdownV2");
 
@@ -173,7 +171,7 @@ public class KeyboardButton {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(chatId);
         editMessageText.setMessageId(messageId); // Update existing message
-        editMessageText.setText(Language.state(chatId));
+        editMessageText.setText(Language.get(chatId, "state"));
         editMessageText.setReplyMarkup(markup);
 
         try {
@@ -249,11 +247,11 @@ public class KeyboardButton {
             List<InlineKeyboardButton> row = new ArrayList<>();
             InlineKeyboardButton button = new InlineKeyboardButton();
             if(stateMessage.equals("Melaka")) {
-                button.setText(Language.zonMelaka(chatId));
+                button.setText(Language.get(chatId, "zonMelaka"));
                 button.setCallbackData("melak");
             }
             else {
-                button.setText(Language.zonPenang(chatId));
+                button.setText(Language.get(chatId, "zonPenang"));
                 button.setCallbackData("penang");
             }
             row.add(button);
@@ -267,7 +265,7 @@ public class KeyboardButton {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(chatId);
         editMessageText.setMessageId(messageId); // Update existing message
-        editMessageText.setText(Language.zone(chatId));
+        editMessageText.setText(Language.get(chatId, "zone"));
         editMessageText.setReplyMarkup(markup);
 
         try {
@@ -291,7 +289,7 @@ public class KeyboardButton {
         if (waktuSolat != null) {
             editMessageText.setText(waktuSolat);
         } else {
-            editMessageText.setText(Language.failedPrayerMessage(chatId));
+            editMessageText.setText(Language.get(chatId, "failedPrayerMessage"));
         }
 
         try {
@@ -331,7 +329,7 @@ public class KeyboardButton {
         // Create the message
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
-        message.setText(Language.chooseLanguage(chatId));
+        message.setText(Language.get(chatId, "chooseLanguage"));
         message.setReplyMarkup(markup);
 
         try {
@@ -355,7 +353,7 @@ public class KeyboardButton {
         EditMessageText editMessageText = new EditMessageText();
         editMessageText.setChatId(chatId);
         editMessageText.setMessageId(messageId);
-        editMessageText.setText(Language.informLanguage(chatId, botUsername));
+        editMessageText.setText(Language.get(chatId, "informLanguage", bot.getBotUsername()));
         editMessageText.setParseMode("MarkdownV2");
 
         try {
@@ -372,7 +370,7 @@ public class KeyboardButton {
     public void sendSource(String chatId) {// Create the message
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
-        message.setText(Language.source(chatId, botUsername));
+        message.setText(Language.get(chatId, "source", bot.getBotUsername()));
         message.setParseMode("MarkdownV2");
 
         try {
@@ -426,15 +424,13 @@ public class KeyboardButton {
  */
 class ResendKeyboardButton {
     private final TelegramBot bot;
-    private final String botUsername;
 
     /**
      * Constructs a ResendKeyboardButton instance with a reference to the TelegramBot instance.
      * @param bot The TelegramBot instance
      */
-    public ResendKeyboardButton(TelegramBot bot, String botUsername) {
+    public ResendKeyboardButton(TelegramBot bot) {
         this.bot = bot;
-        this.botUsername = botUsername;
     }
 
     /**
@@ -448,7 +444,7 @@ class ResendKeyboardButton {
 
         List<InlineKeyboardButton> row1 = new ArrayList<>();
         InlineKeyboardButton button = new InlineKeyboardButton();
-        button.setText(Language.nextButton(chatId));
+        button.setText(Language.get(chatId, "nextButton"));
         button.setCallbackData("next");
         row1.add(button);
 
@@ -460,7 +456,7 @@ class ResendKeyboardButton {
 
         // Create the message
         message.setChatId(chatId);
-        message.setText(Language.informLanguage(chatId, botUsername));
+        message.setText(Language.get(chatId, "informLanguage", bot.getBotUsername()));
         message.setReplyMarkup(markup);
         message.setParseMode("MarkdownV2");
 
@@ -544,11 +540,11 @@ class ResendKeyboardButton {
             List<InlineKeyboardButton> row = new ArrayList<>();
             InlineKeyboardButton button = new InlineKeyboardButton();
             if(stateMessage.equals("Melaka")) {
-                button.setText(Language.zonMelaka(chatId));
+                button.setText(Language.get(chatId, "zonMelaka"));
                 button.setCallbackData("melak");
             }
             else {
-                button.setText(Language.zonPenang(chatId));
+                button.setText(Language.get(chatId, "zonPenang"));
                 button.setCallbackData("penang");
             }
             row.add(button);
@@ -560,7 +556,7 @@ class ResendKeyboardButton {
 
         // Create the message
         message.setChatId(chatId);
-        message.setText(Language.zone(chatId));
+        message.setText(Language.get(chatId, "zone"));
         message.setReplyMarkup(markup);
 
         try {
@@ -637,7 +633,7 @@ class ResendKeyboardButton {
         if (waktuSolat != null) {
             message.setText(waktuSolat);
         } else {
-            message.setText(Language.failedPrayerMessage(chatId));
+            message.setText(Language.get(chatId, "failedPrayerMessage"));
         }
 
         try {

@@ -40,9 +40,9 @@ public class WaktuSolatAPI {
 
         // Rename certain area
         if(area.equals("melak"))
-            area = Language.zonMelaka(chatId);
+            area = Language.get(chatId, "zonMelaka");
         else if(area.equals("penang"))
-            area = Language.zonPenang(chatId);
+            area = Language.get(chatId, "zonPenang");
 
         // Set Malaysia's timezone
         ZoneId malaysiaZone = ZoneId.of("Asia/Kuala_Lumpur");
@@ -101,10 +101,10 @@ public class WaktuSolatAPI {
                 String isha = LocalTime.parse(prayerTimeObject.get("isha").getAsString()).format(timeFormatter).toLowerCase();
 
                 // Append header of the output
-                prayerTimes.append(Language.outputHeader(chatId))
-                        .append(Language.outputDay(chatId)).append(dateAccessedFormatted).append("\n")
-                        .append(Language.outputState(chatId)).append(negeriFormat).append("\n")
-                        .append(Language.outputArea(chatId)).append(areaFormat).append("\n\n");
+                prayerTimes.append(Language.get(chatId, "outputHeader"))
+                        .append(Language.get(chatId, "outputDay")).append(dateAccessedFormatted).append("\n")
+                        .append(Language.get(chatId, "outputState")).append(negeriFormat).append("\n")
+                        .append(Language.get(chatId, "outputArea")).append(areaFormat).append("\n\n");
 
                 // Append the formatted prayer times to the output
                 prayerTimes.append("*Imsak*: ").append(imsak).append("\n")

@@ -1,0 +1,9 @@
+services:
+  telegram-bot:
+    image: waktusolatbot:latest
+    build: .
+    restart: unless-stopped
+    environment:
+      BOT_TOKEN: ${BOT_TOKEN:?BOT_TOKEN is required}
+    volumes:
+      - ./data:/app/data   # persists user_data.txt across container re-creation

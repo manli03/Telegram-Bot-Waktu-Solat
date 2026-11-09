@@ -1,8 +1,10 @@
 package my.uum;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.GetMe;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
  * Represents a Telegram Bot that extends TelegramLongPollingBot.
@@ -17,7 +19,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final String normal = "STATE_NORMAL";
     private final String busy = "STATE_EXPECTING_CALLBACK";
     private final String botToken = System.getenv("BOT_TOKEN");
-    private final String botUsername = System.getenv("BOT_USERNAME");
+    private volatile String botUsername; // Fetched from Telegram (getMe) on first use
 
 
 
@@ -28,7 +30,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     public TelegramBot() {
         // Initialize the TelegramBot instance and pass it to KeyboardButton
         this.bot = this;
-        this.kb = new KeyboardButton(bot, botUsername);
+        this.kb = new KeyboardButton(bot);
     }
 
     /**
@@ -55,26 +57,25 @@ public class TelegramBot extends TelegramLongPollingBot {
      * @param update The received update
      */
     private void handleTextMessage(Update update) {
-        // Extract the message text, chat ID, and firstName and username
+        // Extract the message text, chat ID, and firstName
         String messageText = update.getMessage().getText();
         String chatId = update.getMessage().getChatId().toString();
         String firstName = update.getMessage().getFrom().getFirstName();
-        String username = update.getMessage().getFrom().getUserName();
+        // Log the interaction first so new users are created with their first-seen time
+        UserInformation.recordActivity(chatId, update.getMessage().getFrom(),
+                update.getMessage().getChat().getType(), messageText);
         Integer buttonMessageId;
         String currentState = UserInformation.getUserCurrentState(chatId);
         String lastSentMessage = UserInformation.getLastSendMessage(chatId);
         Integer lastButtonMessageId = UserInformation.getLastButtonMessageId(chatId);
-        ResendKeyboardButton rkb = new ResendKeyboardButton(bot, botUsername);
-
-        // Update current username
-        UserInformation.setUserUsername(chatId, username);
+        ResendKeyboardButton rkb = new ResendKeyboardButton(bot);
 
         switch (currentState) {
 
             case busy:
                 // The user was expected to interact with a callback query but sent a text message instead
                 kb.deleteMessage(chatId, lastButtonMessageId); // Reset last button
-                kb.sendMessage(chatId, Language.errorMessage(chatId));
+                kb.sendMessage(chatId, Language.get(chatId, "errorMessage"));
 
                 if (lastSentMessage != null) {
                     switch (lastSentMessage) {
@@ -83,7 +84,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                             UserInformation.setLastButtonMessageId(chatId, buttonMessageId);
                             break;
                         case "stateMenu":
-                            buttonMessageId = rkb.resendStateMenu(chatId, Language.state(chatId));
+                            buttonMessageId = rkb.resendStateMenu(chatId, Language.get(chatId, "state"));
                             UserInformation.setLastButtonMessageId(chatId, buttonMessageId);
                             break;
                         case "zoneMenu":
@@ -103,7 +104,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             case "start":
                 // If user keep spamming /start command
                 kb.deleteMessage(chatId, lastButtonMessageId);
-                kb.sendMessage(chatId, Language.errorMessage(chatId));
+                kb.sendMessage(chatId, Language.get(chatId, "errorMessage"));
                 buttonMessageId = kb.sendStartupMessage(chatId, firstName);
                 UserInformation.setLastButtonMessageId(chatId, buttonMessageId);
                 break;
@@ -122,10 +123,10 @@ public class TelegramBot extends TelegramLongPollingBot {
                         if (prayerTimes != null) {
                             rkb.reSendwaktuSolatToTelegram(prayerTimes, chatId);
                             UserInformation.setUserCurrentState(chatId, normal);
-                            kb.sendMessage(chatId, Language.showMenuMessage(chatId));
+                            kb.sendMessage(chatId, Language.get(chatId, "showMenuMessage"));
                         }
                         else {
-                            buttonMessageId = rkb.resendStateMenu(chatId, Language.chooseStateFirst(chatId));
+                            buttonMessageId = rkb.resendStateMenu(chatId, Language.get(chatId, "chooseStateFirst"));
                             UserInformation.setLastButtonMessageId(chatId, buttonMessageId);
                             UserInformation.setLastSendMessage(chatId, "stateMenu");
                             UserInformation.setUserCurrentState(chatId, busy);
@@ -133,7 +134,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         break;
                     case "/switch_state":
                     case "/tukar_negeri":
-                        buttonMessageId = rkb.resendStateMenu(chatId, Language.state(chatId));
+                        buttonMessageId = rkb.resendStateMenu(chatId, Language.get(chatId, "state"));
                         UserInformation.setLastButtonMessageId(chatId, buttonMessageId);
                         UserInformation.setLastSendMessage(chatId, "stateMenu");
                         UserInformation.setUserCurrentState(chatId, busy);
@@ -143,7 +144,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         if(UserInformation.getUserState(chatId) != null)
                             buttonMessageId = rkb.resendZoneMenu(chatId, UserInformation.getUserState(chatId));
                         else
-                            buttonMessageId = rkb.resendStateMenu(chatId, Language.chooseStateFirst(chatId));
+                            buttonMessageId = rkb.resendStateMenu(chatId, Language.get(chatId, "chooseStateFirst"));
                         UserInformation.setLastButtonMessageId(chatId, buttonMessageId);
                         UserInformation.setLastSendMessage(chatId, "zoneMenu");
                         UserInformation.setUserCurrentState(chatId, busy);
@@ -158,7 +159,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     case "/source":
                     case "/sumber":
                         kb.sendSource(chatId);
-                        kb.sendMessage(chatId, Language.showMenuMessage(chatId));
+                        kb.sendMessage(chatId, Language.get(chatId, "showMenuMessage"));
                         break;
                     case "/show_menu":
                     case "/papar_menu":
@@ -166,7 +167,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                         break;
                     default:
                         // Unrecognized command: send error message
-                        kb.sendMessage(chatId, Language.errorMessage(chatId));
+                        kb.sendMessage(chatId, Language.get(chatId, "errorMessage"));
                         break;
                 }
         }
@@ -181,6 +182,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         String data = update.getCallbackQuery().getData();
         String chatId = update.getCallbackQuery().getMessage().getChatId().toString();
         Integer messageId = update.getCallbackQuery().getMessage().getMessageId();
+        UserInformation.recordActivity(chatId, update.getCallbackQuery().getFrom(), null, "button:" + data);
 
         // Handle callback queries based on the data
         if (data.equals("Bahasa Melayu") || data.equals("English")) {
@@ -196,7 +198,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         } else if (data.equals("malay") || data.equals("inggeris")) {
             UserInformation.setUserLanguagePreference(chatId, data);
             kb.informLanguage(chatId, messageId);
-            kb.sendMessage(chatId, Language.showMenuMessage(chatId));
+            kb.sendMessage(chatId, Language.get(chatId, "showMenuMessage"));
             UserInformation.setUserCurrentState(chatId, normal);
         } else if (Location.checkState(data)) {
             UserInformation.setUserState(chatId, data);
@@ -209,13 +211,13 @@ public class TelegramBot extends TelegramLongPollingBot {
             String prayerTimes = WaktuSolatAPI.getPrayerTimes(chatId);
             kb.sendwaktuSolatToTelegram(prayerTimes, chatId, messageId);
             UserInformation.setUserCurrentState(chatId, normal);
-            kb.sendMessage(chatId, Language.showMenuMessage(chatId));
+            kb.sendMessage(chatId, Language.get(chatId, "showMenuMessage"));
         } else {
             // Handle unrecognized data in the callback query
             EditMessageText editMessageText = new EditMessageText();
             editMessageText.setChatId(chatId);
             editMessageText.setMessageId(messageId);
-            editMessageText.setText(Language.failedZoneArea(chatId));
+            editMessageText.setText(Language.get(chatId, "failedZoneArea"));
             UserInformation.setUserCurrentState(chatId, normal);
             System.out.println(data);
 
@@ -228,13 +230,22 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     /**
-     * Gets the username of the bot.
+     * Gets the username of the bot, asking Telegram (getMe) the first time so it
+     * never has to be configured separately from the token.
      * @return The bot's username
      */
     @Override
     public String getBotUsername() {
-        if (botUsername == null || botUsername.isEmpty()) {
-            throw new IllegalStateException("Bot username is not set. Please provide the BOT_USERNAME environment variable.");
+        if (botUsername == null) {
+            synchronized (this) {
+                if (botUsername == null) {
+                    try {
+                        botUsername = execute(new GetMe()).getUserName();
+                    } catch (TelegramApiException e) {
+                        throw new IllegalStateException("Could not fetch bot username from Telegram. Check BOT_TOKEN.", e);
+                    }
+                }
+            }
         }
         return botUsername;
     }
