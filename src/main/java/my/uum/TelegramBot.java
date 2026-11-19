@@ -1,18 +1,22 @@
 package my.uum;
 
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.bots.TelegramWebhookBot;
+import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.GetMe;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 /**
- * Represents a Telegram Bot that extends TelegramLongPollingBot.
+ * Represents a Telegram Bot that receives updates through a webhook.
  * This bot handles text messages and callback queries from users.
  *
  * @author Aiman Norazli
  */
-public class TelegramBot extends TelegramLongPollingBot {
+public class TelegramBot extends TelegramWebhookBot {
+
+    /** Webhook path segment; Telegram posts to {WEBHOOK_URL}/callback/{BOT_PATH}. */
+    public static final String BOT_PATH = "waktusolat";
 
     private final TelegramBot bot; // Store the instance of TelegramBot
     private final KeyboardButton kb; // KeyboardButton instance
@@ -34,12 +38,13 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     /**
-     * Invoked when an update is received.
+     * Invoked when an update is received from the webhook.
      * Handles text messages and callback queries.
      * @param update The received update
+     * @return Always null; replies are sent with execute() instead
      */
     @Override
-    public void onUpdateReceived(Update update) {
+    public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
 
         // Determine if the update is from a text message
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -50,6 +55,16 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (update.hasCallbackQuery()) {
             handleCallbackQuery(update);
         }
+        return null;
+    }
+
+    /**
+     * Gets the path segment the webhook is served under.
+     * @return The bot path
+     */
+    @Override
+    public String getBotPath() {
+        return BOT_PATH;
     }
 
     /**

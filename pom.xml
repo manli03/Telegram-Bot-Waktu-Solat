@@ -8,12 +8,23 @@
   <packaging>jar</packaging>
 
   <name>Template-MyClass</name>
-  <url>http://maven.apache.org</url>
+  <url>https://maven.apache.org</url>
 
   <properties>
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Override transitive commons-lang3 3.14.0 from telegrambots-meta (CVE-2025-48924, fixed in 3.18.0) -->
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.20.0</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <dependencies>
     <!-- https://mvnrepository.com/artifact/junit/junit -->

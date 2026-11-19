@@ -16,5 +16,6 @@ WORKDIR /app
 ENV TZ=Asia/Kuala_Lumpur \
     USER_DATA_FILE=/app/data/user_data.txt
 COPY --from=build /src/target/waktusolatbot.jar /app/waktusolatbot.jar
+EXPOSE 8080
 VOLUME /app/data
 ENTRYPOINT ["java", "-jar", "/app/waktusolatbot.jar"]

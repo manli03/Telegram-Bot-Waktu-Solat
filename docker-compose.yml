@@ -5,5 +5,10 @@ services:
     restart: unless-stopped
     environment:
       BOT_TOKEN: ${BOT_TOKEN:?BOT_TOKEN is required}
+      WEBHOOK_URL: ${WEBHOOK_URL:?WEBHOOK_URL is required, e.g. https://tele.namia.site}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:?WEBHOOK_SECRET is required}
+    ports:
+      # Only reachable from the server itself; the aaPanel nginx site proxies HTTPS traffic here
+      - "127.0.0.1:${WEBHOOK_HOST_PORT:-8080}:8080"
     volumes:
       - ./data:/app/data   # persists user_data.txt across container re-creation
