@@ -65,7 +65,7 @@ public class WebhookServer {
         }
         String header = exchange.getRequestHeaders().getFirst(SECRET_HEADER);
         if (header == null || !MessageDigest.isEqual(secret, header.getBytes(StandardCharsets.UTF_8))) {
-            respond(exchange, 401, "");
+            respond(exchange, 403, "");
             return;
         }
 
