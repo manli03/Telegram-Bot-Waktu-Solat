@@ -33,4 +33,17 @@ public class LanguageTest extends TestCase {
         assertTrue(en.getString("outputHeader").startsWith("🌟"));
         assertEquals("*Day*: ", en.getString("outputDay"));
     }
+
+    public void testCommandMenusAreValidTelegramCommands() throws Exception {
+        for (String bundle : new String[]{"messages.properties", "messages_ms.properties"}) {
+            String[] entries = load(bundle).getProperty("commands").split(";");
+            assertEquals(bundle, 6, entries.length);
+            for (String entry : entries) {
+                String[] parts = entry.split(":", 2);
+                assertEquals(bundle + ": " + entry, 2, parts.length);
+                assertTrue(bundle + ": " + parts[0], parts[0].trim().matches("[a-z0-9_]{1,32}"));
+                assertTrue(bundle + ": " + entry, parts[1].trim().length() >= 1 && parts[1].trim().length() <= 256);
+            }
+        }
+    }
 }

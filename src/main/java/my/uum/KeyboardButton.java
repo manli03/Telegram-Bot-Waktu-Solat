@@ -1,9 +1,12 @@
 package my.uum;
 
+import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeChat;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -360,6 +363,28 @@ public class KeyboardButton {
             bot.execute(editMessageText);
         } catch (Exception e) {
             System.err.println("Failed to send informLanguage: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Sets the command menu shown in this user's chat to the commands of their chosen language.
+     * @param chatId The chat ID of the user
+     */
+    public void setCommandMenu(String chatId) {
+        List<BotCommand> commands = new ArrayList<>();
+        for (String entry : Language.get(chatId, "commands").split(";")) {
+            String[] parts = entry.split(":", 2);
+            commands.add(new BotCommand(parts[0].trim(), parts[1].trim()));
+        }
+        SetMyCommands setMyCommands = SetMyCommands.builder()
+                .commands(commands)
+                .scope(new BotCommandScopeChat(chatId))
+                .build();
+
+        try {
+            bot.execute(setMyCommands);
+        } catch (Exception e) {
+            System.err.println("Failed to set command menu: " + e.getMessage());
         }
     }
 

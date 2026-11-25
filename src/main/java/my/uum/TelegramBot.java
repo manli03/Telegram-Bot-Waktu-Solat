@@ -202,6 +202,7 @@ public class TelegramBot extends TelegramWebhookBot {
         // Handle callback queries based on the data
         if (data.equals("Bahasa Melayu") || data.equals("English")) {
             UserInformation.setUserLanguagePreference(chatId, data);
+            kb.setCommandMenu(chatId);
             kb.nextButton(chatId, messageId);
             UserInformation.setLastButtonMessageId(chatId, messageId);
             UserInformation.setUserCurrentState(chatId, busy);
@@ -212,6 +213,7 @@ public class TelegramBot extends TelegramWebhookBot {
             UserInformation.setLastSendMessage(chatId, "stateMenu");
         } else if (data.equals("malay") || data.equals("inggeris")) {
             UserInformation.setUserLanguagePreference(chatId, data);
+            kb.setCommandMenu(chatId);
             kb.informLanguage(chatId, messageId);
             kb.sendMessage(chatId, Language.get(chatId, "showMenuMessage"));
             UserInformation.setUserCurrentState(chatId, normal);
